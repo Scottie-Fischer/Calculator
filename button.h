@@ -1,0 +1,13 @@
+#ifndef BUTTON_H
+#define BUTTON_H
+#include <QToolButton>
+
+class myButton: public QToolButton{
+    Q_OBJECT
+
+public:
+    explicit myButton(const QString &text, QWidget *parent = nullptr);
+    QSize sizeHint() const override;
+};
+
+#endif // BUTTON_H
