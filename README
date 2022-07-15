@@ -1,0 +1,12 @@
+------Scott Fischer-------
+
+Description: This project idea was to create a reverse polish arbitary precision calculator with a GUI.
+             I wanted this to work based on a stack system where each number and operation
+             is added to a stack. Operations execute based on previous 2 stack numbers.
+             EX: stack-> + -> 2 -> 2 gives 4, stack-> * -> 8 -> 4 -> 2 gives 32 with the
+             new stack-> 32 -> 2
+             This program functions very similar to the linux's dc program. And works by using C++
+             vectors and two classes I created to handle the operations between numbers.
+
+Software: I am using C++ and specifically the QT library to implement the GUI.
+
