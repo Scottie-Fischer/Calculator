@@ -18,6 +18,7 @@ class bigint{
     public:
         //Ctors
         bigint() = default;
+        bigint(int,bool);
         bigint(long);
         bigint(const ubigint&, bool is_negative = false);
         explicit bigint (const string&);
@@ -37,6 +38,7 @@ class bigint{
 
 
         void print() const;
+        string toString() const;
 
 };
 

@@ -28,10 +28,16 @@ private slots:
     //This handles when a digit is clicked
     void digitClicked();
     void operClicked();
+    //void printClicked();
+    void pushClicked();
+    void clearClicked();
+    void signClicked();
 
 private:
 
+    bool is_neg = false;
     QLineEdit *display;
+    QLineEdit *stackDisplay;
     Ui::Calculator *ui;
 
     myButton *createButton(const QString &text, const char *member);
@@ -45,5 +51,6 @@ private:
 
     //Helper functions
     void do_arith(const char oper);
+    string print_stack();
 };
 #endif // CALCULATOR_H

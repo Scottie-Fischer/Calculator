@@ -20,6 +20,7 @@ class ubigint{
         void divide_by_2();
 
         ubigint() = default;
+        //ubigint(const int);
         ubigint(unsigned long);
         ubigint(const string&);
 
@@ -33,6 +34,7 @@ class ubigint{
         bool operator<(const ubigint&)const;
 
         void print() const;
+        string toString() const;
 
 };
 
