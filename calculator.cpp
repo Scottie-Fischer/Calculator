@@ -103,27 +103,6 @@ void Calculator::clearClicked(){
     is_neg = false;
 }
 
-/*
-void Calculator::printClicked(){
-    if(operand_stack.size() == 0){
-        cout << "stack is empty\n";
-        cout.flush();
-    }
-    else{
-        auto num = operand_stack.begin();
-        string text = "stack->";
-        while(num != operand_stack.end()){
-            text.append(num->toString());
-            if(++num == operand_stack.end()){
-                break;
-            }
-            text.append("->");
-        }
-        cout << text;
-        cout.flush();
-    }
-}
-*/
 void Calculator::pushClicked(){
     if(not display->text().isEmpty()){
         QString txt = display->text();

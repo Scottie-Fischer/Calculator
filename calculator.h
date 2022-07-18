@@ -28,7 +28,6 @@ private slots:
     //This handles when a digit is clicked
     void digitClicked();
     void operClicked();
-    //void printClicked();
     void pushClicked();
     void clearClicked();
     void signClicked();
