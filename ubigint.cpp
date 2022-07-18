@@ -13,8 +13,20 @@ using namespace std;
 #include "ops.h"
 #include "ubigint.h"
 
+#include <iostream>
 
 //Constructor
+/*
+ubigint::ubigint(const int that){
+    int x = that;
+    if(x==0){uvalue.push_back(0);}
+    while(x>=1){
+        uvalue.push_back(x%10);
+        x/=10;
+    }
+    cout << "Making from int" << this;
+}
+*/
 ubigint::ubigint (unsigned long that){//: uvalue (that) {
    unsigned long x = that;
    if(x == 0){uvalue.push_back(0);}
@@ -302,6 +314,19 @@ bool ubigint::operator< (const ubigint& that) const {
    return true;
 
    //return uvalue < that.uvalue;
+}
+string ubigint::toString()const{
+    string txt;
+    auto curr = uvalue.rbegin();
+    while(curr != uvalue.rend()){
+        txt.append(to_string(*curr));
+        ++curr;
+    }
+    /*
+    for(const auto c : uvalue){
+        txt.append(to_string(c));
+    }*/
+    return txt;
 }
 
 void ubigint::print() const {

@@ -9,12 +9,19 @@
 #include <QtMath>
 #include <QLineEdit>
 #include <QGridLayout>
+#include <QSizePolicy>
 using namespace std;
 
 Calculator::Calculator(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::Calculator)
 {
+    //------------Display Lines-----------------
+    stackDisplay = new QLineEdit("stack->");
+    stackDisplay->setReadOnly(true);
+    stackDisplay->setAlignment(Qt::AlignLeft);
+    stackDisplay->setMaxLength(20);
+
     display = new QLineEdit("");
     display->setReadOnly(true);
     display->setAlignment(Qt::AlignLeft);
@@ -23,27 +30,114 @@ Calculator::Calculator(QWidget *parent)
     QFont font = display->font();
     font.setPointSize(font.pointSize() + 8);
     display->setFont(font);
+    //--------------------------------------------
 
-
+    //---------------Buttons----------------------
     for(int i = 0; i < NumDigitButtons;++i){
         digitButtons[i] = createButton(QString::number(i),SLOT(digitClicked()));
     }
 
+    //The Operation Buttons
     auto addButton = createButton("+",SLOT(operClicked()));
+    auto subButton = createButton("-",SLOT(operClicked()));
+    auto divButton = createButton("/",SLOT(operClicked()));
+    auto multButton = createButton("*",SLOT(operClicked()));
 
+    //Helper Buttons
+    auto clearButton = createButton("clear",SLOT(clearClicked()));
+    auto pushButton = createButton("push",SLOT(pushClicked()));
+    auto signButton = createButton("+/-",SLOT(signClicked()));
+    //--------------------------------------------
     //Layout-------------------------
     QGridLayout *mainLayout = new QGridLayout;
     mainLayout->setSizeConstraint(QLayout::SetFixedSize);
-    mainLayout->addWidget(display,0,0,1,6);
+    mainLayout->addWidget(display,1,0,1,6);
+    mainLayout->addWidget(stackDisplay,0,0,1,6);
     for(int i = 1; i < NumDigitButtons;++i){
-        int row = ((9-i)/3)+2;
+        int row = ((9-i)/3)+3;
         int col = ((i-1)%3)+1;
         mainLayout->addWidget(digitButtons[i],row,col);
     }
-    mainLayout->addWidget(addButton,5,1);
+
+    mainLayout->addWidget(addButton,3,4);
+    mainLayout->addWidget(subButton,4,4);
+    mainLayout->addWidget(multButton,5,4);
+    mainLayout->addWidget(divButton,6,4);
+
+    mainLayout->addWidget(clearButton,6,2);
+    mainLayout->addWidget(pushButton,6,3);
+    mainLayout->addWidget(signButton,6,1);
+
+
     setLayout(mainLayout);
     setWindowTitle(tr("Calculator"));
     //ui->setupUi(this);
+}
+
+string Calculator::print_stack(){
+    string stack = "stack->";
+    const bigint beg = *operand_stack.begin();
+    for(auto& c :operand_stack){
+        stack.append(c.toString());
+        if(!(c == beg)){stack.append("->");}
+    }
+    return stack;
+}
+
+void Calculator::signClicked(){
+    QString curr;
+    if(is_neg){
+        is_neg = !is_neg;
+        curr = display->text();
+        curr.remove("-");
+    }else{
+        is_neg = !is_neg;
+        curr = display->text();
+        curr.insert(0,"-");
+    }
+    display->setText(curr);
+}
+
+void Calculator::clearClicked(){
+    display->clear();
+    is_neg = false;
+}
+
+/*
+void Calculator::printClicked(){
+    if(operand_stack.size() == 0){
+        cout << "stack is empty\n";
+        cout.flush();
+    }
+    else{
+        auto num = operand_stack.begin();
+        string text = "stack->";
+        while(num != operand_stack.end()){
+            text.append(num->toString());
+            if(++num == operand_stack.end()){
+                break;
+            }
+            text.append("->");
+        }
+        cout << text;
+        cout.flush();
+    }
+}
+*/
+void Calculator::pushClicked(){
+    if(not display->text().isEmpty()){
+        QString txt = display->text();
+        QString stack_txt = stackDisplay->text();
+        stack_txt.insert(7,txt);
+        stack_txt.insert(7+txt.length(),"->");
+        stackDisplay->setText(stack_txt);
+
+        int int_txt = txt.toInt();
+        bigint newbigint = bigint(int_txt);
+        operand_stack.push(newbigint);
+    }
+    display->clear();
+    is_neg = false;
 }
 
 void Calculator::digitClicked(){
@@ -51,33 +145,41 @@ void Calculator::digitClicked(){
     myButton *clickedButton = qobject_cast<myButton *>(sender());
     //Get the text from the button
     int digitValue = clickedButton->text().toInt();
-    //We create a new bigint
-    bigint newbig = bigint(static_cast<long>(digitValue));
-    cout << newbig; //Debugging output
-    cout.flush();
-    //Now we want to add the bigint to the stack
-    //(Add bigint to stack)
-    operand_stack.push(newbig);
-    //And we add the digit to the display GUI
+    //Add the digit to the display GUI
     display->setText(display->text().append(QString::number(digitValue)));
 }
 
 void Calculator::do_arith(const char oper){
-    if(operand_stack.size() < 2) throw invalid_argument("stack empty");
-    //We pop both numbers off the stack
-    bigint right = operand_stack.top();
-    operand_stack.pop();
-    bigint left = operand_stack.top();
-    operand_stack.pop();
-    bigint res;
-    //Now we call the operator that we defined in each class
-    switch(oper){
-        case '+': res = left+right; break;
-        case '-': res = left-right; break;
-        default : throw invalid_argument(""s+oper);
+    if(operand_stack.size() >= 2){
+        //We pop both numbers off the stack
+
+        bigint right = operand_stack.top();
+        operand_stack.pop();
+
+        bigint left = operand_stack.top();
+        operand_stack.pop();
+
+        bigint res;
+
+        //Now we call the operator that we defined in each class
+        switch(oper){
+            case '+': res = left + right; break;
+            case '-': res = left - right; break;
+            case '*': res = left * right; break;
+            case '/': res = left / right; break;
+            default : throw invalid_argument(""s+oper);
+        }
+        //Push Result to Stack
+        operand_stack.push(res);
+
+        //Update Display
+        QString new_stack = QString::fromStdString(print_stack());
+        stackDisplay->setText(new_stack);
+
+    }else{
+        cout << "too few arguments on stack:"
+             << operand_stack.size();
     }
-    operand_stack.push(res);
-    cout << "res = " << res;
 }
 
 void Calculator::operClicked(){
@@ -85,8 +187,10 @@ void Calculator::operClicked(){
     char oper = (clickedButton->text().toStdString())[0];
 
     switch(oper){
-        case '+': cout << "plus clicked\n"; do_arith(oper); break;
-        case '-': cout << "sub clicked\n"; break;
+        case '+': do_arith(oper); break;
+        case '-': do_arith(oper); break;
+        case '*': do_arith(oper); break;
+        case '/': do_arith(oper); break;
         default : cout << "No Operation matches\n" << (oper);
     }
     cout.flush();

@@ -9,7 +9,14 @@ using namespace std;
 #include <bigint.h>
 
 //Ctors
-bigint::bigint(long that):uvalue(that),is_negative(that < 0){}
+/*
+bigint::bigint(int that,bool is_negative_):
+    uvalue(that),is_negative(is_negative_){
+    cout << "using int and bool: " << that;
+    cout.flush();
+}*/
+
+bigint::bigint(long that):uvalue(abs(that)),is_negative(that < 0){}
 
 bigint::bigint(const ubigint& uvalue_,bool is_negative_):
                uvalue(uvalue_),is_negative(is_negative_){}
@@ -112,6 +119,15 @@ bool bigint::operator<(const bigint& that)const{
 void bigint::print()const{
     if(is_negative)cout << "-";
     uvalue.print();
+}
+
+string bigint::toString() const{
+    string str;
+    if(is_negative){
+        str.append("-");
+    }
+    str.append(uvalue.toString());
+    return str;
 }
 
 //This is to handle the QDebug output
